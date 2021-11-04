@@ -10,13 +10,14 @@ import java.util.ArrayList;
 
 class Line {
 	int x1, y1, x2, y2;
+	Color c;
 
-	public Line(int x1, int y1, int x2, int y2) {
+	public Line(int x1, int y1, int x2, int y2, Color c) {
 		this.x1 = x1;
 		this.y1 = y1;
 		this.x2 = x2;
 		this.y2 = y2;
-		System.out.println("그리는중");
+		this.c = c;
 	}
 }
 
@@ -24,13 +25,15 @@ class Rect {
 	int mod;
 	int x1, y1;
 	int width, height;
+	Color c;
 
-	public Rect(int mod, int x1, int y1, int x2, int y2) {
+	public Rect(int mod, int x1, int y1, int x2, int y2, Color c) {
 		this.mod = mod;
 		this.x1 = x1;
 		this.y1 = y1;
 		this.width = x2;
 		this.height = y2;
+		this.c = c;
 	}
 }
 
@@ -38,11 +41,13 @@ class Triangle {
 	int x[];
 	int y[];
 	int len;
+	Color c;
 
-	public Triangle(int x[], int y[], int len) {
+	public Triangle(int x[], int y[], int len, Color c) {
 		this.x = x;
 		this.y = y;
 		this.len = len;
+		this.c = c;
 	}
 }
 
@@ -50,6 +55,8 @@ class panel extends MyUtil {
 
 	private int mod = 3;
 	private JButton mode[] = new JButton[4];
+	private int cc = 0;
+	private Color color[];
 	private JButton Mycolor[] = new JButton[4];
 	public JButton close = new JButton();
 
@@ -67,11 +74,24 @@ class panel extends MyUtil {
 		setBounds(0, 0, 800, 800);
 		setBackground(Color.white);
 		setFocusable(true);
-
+		setColor();
 		Btn();
 
 		addMouseListener(this);
 		addMouseMotionListener(this);
+	}
+
+	private void setColor() {
+		color = new Color[4];
+		color[0] = Color.black;
+		color[1] = Color(47, 221, 146);
+		color[2] = Color.blue;
+		color[3] = Color(242, 240, 19);
+	}
+
+	private Color Color(int i, int j, int k) {
+		// TODO Auto-generated method stub
+		return new Color(i, j, k);
 	}
 
 	private void Btn() {
@@ -91,10 +111,17 @@ class panel extends MyUtil {
 			add(mode[i]);
 			y += 60;
 		}
-		x=600;
-		y=10;
+		x = 720;
+		y = 10;
+
 		for (int i = 0; i < Mycolor.length; i++) {
-			
+			Mycolor[i] = new JButton();
+			Mycolor[i].setBackground(color[i]);
+			Mycolor[i].setFont(new Font("", 0, 15));
+			Mycolor[i].addMouseListener(this);
+			Mycolor[i].setBounds(x, y, 50, 50);
+			add(Mycolor[i]);
+			y += 60;
 		}
 	}
 
@@ -103,9 +130,14 @@ class panel extends MyUtil {
 		for (int i = 0; i < mode.length; i++) {
 			if ((JButton) e.getSource() == mode[i]) {
 				mod = i;
+				System.out.println(mod);
 			}
 		}
-		System.out.println(mod);
+		for (int i = 0; i < Mycolor.length; i++) {
+			if ((JButton) e.getSource() == Mycolor[i]) {
+				cc = i;
+			}
+		}
 	}
 
 	@Override
@@ -149,7 +181,7 @@ class panel extends MyUtil {
 			x2 = e.getX();
 			y2 = e.getY();
 			System.out.printf("(%d,%d)~(%d,%d)\n", x1, y1, x2, y2);
-			line.add(new Line(x1, y1, x2, y2));
+			line.add(new Line(x1, y1, x2, y2, color[cc]));
 			x1 = x2;
 			y1 = y2;
 		}
@@ -160,24 +192,24 @@ class panel extends MyUtil {
 		if (mod == 0 || mod == 1) {
 			if (x2 != 0 && y2 != 0) {
 				if (x1 > x2 && y1 > y2) {
-					rect.add(new Rect(mod, x2, y2, Math.abs(x1 - x2), Math.abs(y1 - y2)));
+					rect.add(new Rect(mod, x2, y2, Math.abs(x1 - x2), Math.abs(y1 - y2), color[cc]));
 				} else if (x1 > x2 && y1 < y2) {
-					rect.add(new Rect(mod, x2, y1, Math.abs(x1 - x2), Math.abs(y1 - y2)));
+					rect.add(new Rect(mod, x2, y1, Math.abs(x1 - x2), Math.abs(y1 - y2), color[cc]));
 				} else if (x1 < x2 && y1 > y2) {
-					rect.add(new Rect(mod, x1, y2, Math.abs(x1 - x2), Math.abs(y1 - y2)));
+					rect.add(new Rect(mod, x1, y2, Math.abs(x1 - x2), Math.abs(y1 - y2), color[cc]));
 				} else {
-					rect.add(new Rect(mod, x1, y1, Math.abs(x1 - x2), Math.abs(y1 - y2)));
+					rect.add(new Rect(mod, x1, y1, Math.abs(x1 - x2), Math.abs(y1 - y2), color[cc]));
 				}
 			}
 		} else if (mod == 2) {
-			tri.add(new Triangle(ax, ay, 3));
+			tri.add(new Triangle(ax, ay, 3, color[cc]));
 		}
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-
+		g.setColor(color[cc]);
 		// 현재 그리기
 		if (x2 != 0 && y2 != 0) {
 			if (mod == 0) {
@@ -216,8 +248,10 @@ class panel extends MyUtil {
 		if (!rect.isEmpty()) {
 			for (int i = 0; i < rect.size(); i++) {
 				if (rect.get(i).mod == 0) {
+					g.setColor(rect.get(i).c);
 					g.drawRect(rect.get(i).x1, rect.get(i).y1, rect.get(i).width, rect.get(i).height);
 				} else if (rect.get(i).mod == 1) {
+					g.setColor(rect.get(i).c);
 					g.drawRoundRect(rect.get(i).x1, rect.get(i).y1, rect.get(i).width, rect.get(i).height,
 							rect.get(i).width, rect.get(i).height);
 				}
@@ -227,11 +261,13 @@ class panel extends MyUtil {
 		// 삼각형
 		if (!tri.isEmpty()) {
 			for (int i = 0; i < tri.size(); i++) {
+				g.setColor(tri.get(i).c);
 				g.drawPolygon(tri.get(i).x, tri.get(i).y, tri.get(i).len);
 			}
 		}
 		if (!line.isEmpty()) {
 			for (int i = 0; i < line.size(); i++) {
+				g.setColor(line.get(i).c);
 				g.drawLine(line.get(i).x1, line.get(i).y1, line.get(i).x2, line.get(i).y2);
 			}
 		}
