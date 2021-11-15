@@ -119,7 +119,7 @@ public class RacingPanel extends MyUtil implements Runnable {
 					// goal
 					if (tmpX >= Race.WIDTH - 30 - h.getW() && !goal) {
 						h.setState(h.GOAL);
-						h.setRecord(String.format("%3d.%3d", this.ms / 1000, this.ms % 1000));
+						h.setRecord(String.format("%4d.%03d", this.ms / 1000, this.ms % 1000));
 
 						h.setRank(this.rank);
 						this.rank++;
@@ -127,8 +127,7 @@ public class RacingPanel extends MyUtil implements Runnable {
 
 					} else if (tmpX >= Race.WIDTH - 30 - h.getW()) {
 						i--;
-						// 되돌아가는 말이 발생할 경우 -> ms 홀딩하는 변수를 활용
-						break;
+						continue;
 					}
 					h.setX(tmpX);
 				}
